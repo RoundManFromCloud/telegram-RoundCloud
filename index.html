@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telegram Web App</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        #fileList { margin-top: 20px; }
+        .fileItem { margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>Welcome to Telegram Web App</h1>
+    <button onclick="requestFile()">Upload File</button>
+    <div id="fileList"></div>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+
+        function requestFile() {
+            tg.showPopup({
+                title: "Upload File",
+                message: "Please upload your file using the Telegram app.",
+                buttons: [{ id: 'upload', type: 'default', text: 'Upload' }]
+            });
+        }
+
+        tg.onEvent('popupClosed', (event) => {
+            if (event.button_id === 'upload') {
+                tg.sendData("upload");
+            }
+        });
+
+        function updateFileList(files) {
+            const fileList = document.getElementById('fileList');
+            fileList.innerHTML = '';
+            files.forEach(file => {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'fileItem';
+                fileItem.textContent = `${file.file_name} (ID: ${file.file_id})`;
+                fileList.appendChild(fileItem);
+            });
+        }
+
+        tg.onEvent('mainButtonClicked', () => {
+            tg.sendData("mainButtonClicked");
+        });
+
+        tg.ready();
+    </script>
+</body>
+</html>
